@@ -37,11 +37,6 @@ jobs:
         echo 'Locating MSBuild.exe...'
         dir "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin"
     
-    - name: Locate MSBuild 2
-      run: |
-        echo 'Locating MSBuild.exe...'
-        dir "C:\Program Files\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin"
-      
 
     - name: Build Notepad++ manually
       run: |
