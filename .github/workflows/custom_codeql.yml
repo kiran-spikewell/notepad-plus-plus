@@ -30,8 +30,7 @@ jobs:
 
     - name: Install Visual Studio 2022 Build Tools
       run: |
-        choco install visualstudio2022buildtools --version 17.5.0.0 --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --includeOptional" --no-progress
-
+        choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --passive --locale en-US"
     - name: Setup MSBuild Path
       run: |
         $env:PATH += ";C:\Program Files\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin"
