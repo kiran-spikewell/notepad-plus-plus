@@ -1,60 +1,53 @@
-name: "CodeQL"
+name: CodeQL
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ main ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ main ]
   schedule:
-    - cron: '44 11 * * 3'
+    - cron: '0 1 * * 3'
 
 jobs:
   analyze:
-    name: Analyze (${{ matrix.language }})
+    name: Analyze
     runs-on: windows-latest
-    timeout-minutes: 360
-    permissions:
-      security-events: write
-      packages: read
-      actions: read
-      contents: read
 
     strategy:
       fail-fast: false
       matrix:
-        include:
-        - language: c-cpp
-          build-mode: manual
-        - language: javascript-typescript
-          build-mode: none
-        - language: python
-          build-mode: none
-        - language: ruby
-          build-mode: none
-
+        language: [ 'cpp' ]
+    
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v3
 
-    - name: Set up MSBuild
-      uses: microsoft/setup-msbuild@v1.0.2
+    - name: Install Chocolatey
+      run: |
+        Set-ExecutionPolicy Bypass -Scope Process -Force; 
+        [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; 
+        iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'));
 
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
-      with:
-        languages: ${{ matrix.language }}
-        build-mode: ${{ matrix.build-mode }}
+    - name: Install Visual Studio 2022 Build Tools
+      run: |
+        choco install visualstudio2022buildtools --version 17.5.0.0 --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --includeOptional" --no-progress
 
-    - if: matrix.build-mode == 'manual'
-      shell: bash
+    - name: Setup MSBuild Path
+      run: |
+        $env:PATH += ";C:\Program Files\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin"
+
+    - name: Build Notepad++ manually
       run: |
         echo 'Building Notepad++ manually...'
-        # Install dependencies
-        choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --passive --locale en-US"
-        # Open solution and build
-        MSBuild.exe PowerEditor/visual.net/notepadPlus.sln /p:Configuration=Release /p:Platform=x64
+        & "C:\Program Files\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\MSBuild.exe" PowerEditor/visual.net/notepadPlus.sln /p:Configuration=Release /p:Platform=x64
+
+    - name: Initialize the CodeQL toolchain
+      uses: github/codeql-action/init@v2
+      with:
+        languages: cpp
+
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v2
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
-      with:
-        category: "/language:${{matrix.language}}"
+      uses: github/codeql-action/analyze@v2
