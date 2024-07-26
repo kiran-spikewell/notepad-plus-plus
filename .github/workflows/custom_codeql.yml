@@ -31,16 +31,22 @@ jobs:
     - name: Install Visual Studio 2022 Build Tools
       run: |
         choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --passive --locale en-US"
-
     
-   # - name: Setup MSBuild Path
-    #  run: |
-    #    $env:PATH += ";C:\Users\runneradmin\AppData\Local\Temp\chocolatey\visualstudio2022buildtools\117.10.4\"
+    - name: Locate MSBuild 1
+      run: |
+        echo 'Locating MSBuild.exe...'
+        dir "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin"
+    
+    - name: Locate MSBuild 2
+      run: |
+        echo 'Locating MSBuild.exe...'
+        dir "C:\Program Files\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin"
+      
 
     - name: Build Notepad++ manually
       run: |
         echo 'Building Notepad++ manually...'
-        & "C:\Users\runneradmin\AppData\Local\Temp\chocolatey\visualstudio2022buildtools\117.10.4\vs_BuildTools.exe" PowerEditor/visual.net/notepadPlus.sln /p:Configuration=Release /p:Platform=x64
+        & "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\MSBuild.exe" PowerEditor/visual.net/notepadPlus.sln /p:Configuration=Release /p:Platform=x64
 
     - name: Initialize the CodeQL toolchain
       uses: github/codeql-action/init@v2
