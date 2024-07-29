@@ -15,7 +15,7 @@ jobs:
 
     strategy:
       fail-fast: false
-     matrix:
+      matrix:
         language: [ 'cpp', 'javascript', 'typescript', 'python' ] 
     
     steps:
@@ -33,7 +33,6 @@ jobs:
       run: |
         choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --passive --locale en-US"
     
-
     - name: Build Notepad++ manually
       if: matrix.language == 'cpp'
       run: |
