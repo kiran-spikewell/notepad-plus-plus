@@ -16,15 +16,7 @@ jobs:
     strategy:
       fail-fast: false
      matrix:
-        include:
-        - language: c-cpp
-          build-mode: manualbuild
-        - language: javascript-typescript
-          build-mode: none
-        - language: python
-          build-mode: none
-        - language: ruby
-          build-mode: none   
+        language: [ 'cpp', 'javascript', 'typescript', 'python' ] 
     
     steps:
     - name: Checkout repository
@@ -37,11 +29,13 @@ jobs:
         iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'));
 
     - name: Install Visual Studio 2022 Build Tools
+      if: matrix.language == 'cpp'
       run: |
         choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --passive --locale en-US"
     
 
     - name: Build Notepad++ manually
+      if: matrix.language == 'cpp'
       run: |
         echo 'Building Notepad++ manually...'
         & "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\MSBuild.exe" PowerEditor/visual.net/notepadPlus.sln /p:Configuration=Release /p:Platform=x64
@@ -49,7 +43,7 @@ jobs:
     - name: Initialize the CodeQL toolchain
       uses: github/codeql-action/init@v3
       with:
-        languages: cpp
+        languages: ${{ matrix.language }}
 
     - name: Autobuild
       uses: github/codeql-action/autobuild@v3
