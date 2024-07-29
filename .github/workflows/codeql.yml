@@ -15,8 +15,16 @@ jobs:
 
     strategy:
       fail-fast: false
-      matrix:
-        language: [ 'cpp' ]
+     matrix:
+        include:
+        - language: c-cpp
+          build-mode: manualbuild
+        - language: javascript-typescript
+          build-mode: none
+        - language: python
+          build-mode: none
+        - language: ruby
+          build-mode: none   
     
     steps:
     - name: Checkout repository
